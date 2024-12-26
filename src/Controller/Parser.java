@@ -25,6 +25,7 @@ public class Parser {
      * @param move a String to be validated
      * @return a boolean representing whether the argument is a valid move
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateMove(String move) {
         return move.toLowerCase().trim().matches("[a-iA-I][1-9][Ff]?");
     }
