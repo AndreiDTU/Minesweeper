@@ -43,18 +43,13 @@ public class Board {
     /**
      * Get an ArrayList of the status of a given coordinate's neighbours
      * @param coord a Coord whose neighbours we want to access
-     * @return an ArrayList of the statuses of the coordinate's neighbours
+     * @return an ArrayList of the statuses of the coordinate's neighbours' statuses
      */
     public ArrayList<Status> getNeighbours(Coord coord) {
-        return board.entrySet().stream()
-                .filter(entry -> {
-                    int xDif = Math.abs(coord.x() - entry.getKey().x());
-                    int yDif = Math.abs(coord.y() - entry.getKey().y());
-                    return (xDif == 1 && yDif == 0)
-                        || (xDif == 0 && yDif == 1)
-                        || (xDif == 1 && yDif == 1);
-                })
-                .map(Map.Entry::getValue)
+        return coord.neighbours()
+                .stream()
+                .filter(board::containsKey)
+                .map(board::get)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
