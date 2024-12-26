@@ -91,4 +91,10 @@ class BoardTest {
     void flags() {
         assertEquals((int)board.getBoard().values().stream().filter(Status::isFlag).count(), board.flags());
     }
+
+    @RepeatedTest(20)
+    void bbbv() {
+        int bbbv = board.bbbv();
+        assertTrue(1 <= bbbv && bbbv <= 72);
+    }
 }

@@ -32,6 +32,6 @@ public class Main {
         }
 
         System.out.println(board);
-        System.out.println(board.win() ? "You win!" : "Game Over!");
+        System.out.println(board.endScreen());
     }
 }

@@ -14,6 +14,7 @@ public class Controller {
      * @return a boolean representing whether the move resulted in an explosion
      */
     public static boolean make(Move move, Board board) {
+        board.incrementMoves();
         return move.flag()
                 ? board.flag(move.coord())
                 : board.reveal(move.coord());

@@ -1,9 +1,10 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,7 +22,10 @@ public class Board {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN   = "\u001B[36m";
 
-    LinkedHashMap<Coord, Status> board;
+    private final LinkedHashMap<Coord, Status> board;
+    private final HashMap<Coord, Boolean> marks = new HashMap<>();
+
+    private double moves = 0;
 
     /**
      * Generates a standard beginner game of Minesweeper with a 9x9 grid containing 10 bombs
@@ -38,6 +42,10 @@ public class Board {
                 .limit(NUM_BOMBS)
                 .mapToObj(Coord::fromInt)
                 .forEach(e -> board.put(e, Status.BOMB));
+    }
+
+    public void incrementMoves() {
+        moves++;
     }
 
     /**
@@ -126,6 +134,38 @@ public class Board {
     }
 
     /**
+     * Generates 3BV for the given board
+     * @return the 3BV as an int
+     */
+    public int bbbv() {
+        AtomicInteger bbbv = new AtomicInteger();
+        marks.clear();
+        board.keySet().forEach(k -> marks.put(k, false));
+
+        for(Coord coord : board.keySet()) {
+            if(marks.get(coord)) continue;
+            marks.replace(coord, true);
+            bbbv.getAndIncrement();
+            floodFillMark(coord);
+        }
+
+        marks.forEach((k, v) -> {
+            if(v)return;
+            if(!board.get(k).isBomb())
+                bbbv.getAndIncrement();
+        });
+
+        return bbbv.get();
+    }
+
+    private void floodFillMark(Coord coord) {
+        coord.neighbours().stream().filter(board::containsKey).filter(c -> !marks.get(c)).forEach(c -> {
+            marks.replace(c, true);
+            if(!board.get(c).isBomb() && c.neighbours().stream().filter(board::containsKey).map(board::get).noneMatch(Status::isBomb)) floodFillMark(c);
+        });
+    }
+
+    /**
      * DEBUG: Testing method for getting the status of a certain tile directly
      * @param coord a Coord of the tile accessed
      * @return the status of the tile
@@ -163,6 +203,24 @@ public class Board {
             }
             sb.append("\n");
         }
+        return sb.toString();
+    }
+
+    public String endScreen() {
+        StringBuilder sb = new StringBuilder();
+        int bbbv = bbbv();
+        boolean win = win();
+        double efficiency = (double)((int)((1 - (moves - bbbv)/moves) * 100) * 100) / 100;
+
+        sb.append(ANSI_YELLOW);
+
+        sb.append("3BV: ").append(bbbv).append("\n");
+        sb.append("Moves: ").append(moves).append("\n");
+        if(win) sb.append("Efficiency: ").append(efficiency).append("%\n");
+
+        sb.append(win ? "You win!" : "Game Over!");
+        sb.append(ANSI_RESET);
+
         return sb.toString();
     }
 
