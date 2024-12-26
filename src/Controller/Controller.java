@@ -15,8 +15,10 @@ public class Controller {
      */
     public static boolean make(Move move, Board board) {
         board.incrementMoves();
-        return move.flag()
-                ? board.flag(move.coord())
-                : board.reveal(move.coord());
+        return switch (move.type()) {
+            case FLAG -> board.flag(move.coord());
+            case REVEAL -> board.reveal(move.coord());
+            case CHORD -> board.chord(move.coord());
+        };
     }
 }

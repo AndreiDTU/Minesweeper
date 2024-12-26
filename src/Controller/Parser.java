@@ -2,6 +2,7 @@ package Controller;
 
 import Model.Coord;
 import Model.Move;
+import Model.MoveType;
 
 /**
  * Static method container class for methods related to parsing and validating user input
@@ -15,9 +16,11 @@ public class Parser {
     public static Move parseMove(String move) {
         move = move.toLowerCase().trim();
         Coord coord = new Coord(move.charAt(0) - 'a' + 1, move.charAt(1) - '0');
-        return move.length() >= 3 && move.charAt(2) == 'f'
-                ? new Move(coord, true)
-                : new Move(coord, false);
+        return move.length() >= 3
+                ? move.charAt(2) == 'f'
+                ? new Move(coord, MoveType.FLAG)
+                : new Move(coord, MoveType.CHORD)
+                : new Move(coord, MoveType.REVEAL);
     }
 
     /**
@@ -27,6 +30,6 @@ public class Parser {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean validateMove(String move) {
-        return move.toLowerCase().trim().matches("[a-iA-I][1-9][Ff]?");
+        return move.toLowerCase().trim().matches("[a-i][1-9][cf]?");
     }
 }

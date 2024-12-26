@@ -101,6 +101,12 @@ public class Board {
         return true;
     }
 
+    public boolean chord(Coord coord) {
+        if(getNeighbours(coord).stream().filter(Status::isBomb).count() == getNeighbours(coord).stream().filter(Status::isFlag).count()) {
+            return coord.neighbours().stream().filter(board::containsKey).map(this::reveal).reduce(Boolean::logicalAnd).orElseThrow();
+        } else return true;
+    }
+
     /**
      * A method to check whether a game has been won
      * @return a boolean indicating whether the board contains anymore unrevealed tiles, or flags over unrevealed tiles
