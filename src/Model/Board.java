@@ -167,7 +167,7 @@ public class Board {
     private void floodFillMark(Coord coord) {
         coord.neighbours().stream().filter(board::containsKey).filter(c -> !marks.get(c)).forEach(c -> {
             marks.replace(c, true);
-            if(!board.get(c).isBomb() && c.neighbours().stream().filter(board::containsKey).map(board::get).noneMatch(Status::isBomb)) floodFillMark(c);
+            if(!board.get(c).isBomb() && getNeighbours(c).stream().noneMatch(Status::isBomb)) floodFillMark(c);
         });
     }
 
