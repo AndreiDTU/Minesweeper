@@ -7,20 +7,13 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import static View.ANSIColors.*;
 
 /**
  * Representation of the Minesweeper board
  */
 public class Board {
     public static final int NUM_BOMBS = 10;
-
-    public static final String ANSI_RESET  = "\u001B[0m";
-    public static final String ANSI_RED    = "\u001B[31m";
-    public static final String ANSI_GREEN  = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE   = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN   = "\u001B[36m";
 
     private final LinkedHashMap<Coord, Status> board;
     private final HashMap<Coord, Boolean> marks = new HashMap<>();
@@ -237,9 +230,13 @@ public class Board {
      */
     private String getIcon(Coord coord) {
         return switch (board.get(coord)) {
-            case CLOSED, BOMB           -> "#";
-            case FLAG_BOMB, FLAG_EMPTY  -> ANSI_YELLOW + "F" + ANSI_RESET;
-            case BLOWN                  -> ANSI_YELLOW + "X" + ANSI_RESET;
+            case CLOSED, BOMB -> "#";
+
+            case BLOWN      -> ANSI_BLACK + ANSI_BG_RED + "X" + ANSI_RESET;
+            case FLAG_BOMB  -> ANSI_BRIGHT_YELLOW + "F" + ANSI_RESET;
+            case FLAG_EMPTY -> board.containsValue(Status.BLOWN)
+                    ? ANSI_BRIGHT_YELLOW + ANSI_BG_BRIGHT_RED + "F" + ANSI_RESET
+                    : ANSI_BRIGHT_YELLOW + "F" + ANSI_RESET;
 
             case OPEN -> switch (
                 (int)getNeighbours(coord).stream()
@@ -247,14 +244,14 @@ public class Board {
                     .count()
             ) {
                 case 0 -> " ";
-                case 1 -> ANSI_BLUE   + 1 + ANSI_RESET;
-                case 2 -> ANSI_GREEN  + 2 + ANSI_RESET;
-                case 3 -> ANSI_RED    + 3 + ANSI_RESET;
-                case 4 -> ANSI_PURPLE + 4 + ANSI_RESET;
-                case 5 -> ANSI_RED    + 5 + ANSI_RESET;
-                case 6 -> ANSI_CYAN   + 6 + ANSI_RESET;
-                case 7 -> ANSI_PURPLE + 7 + ANSI_RESET;
-                case 8 -> ANSI_GREEN  + 8 + ANSI_RESET;
+                case 1 -> ANSI_BRIGHT_BLUE  + 1 + ANSI_RESET;
+                case 2 -> ANSI_GREEN        + 2 + ANSI_RESET;
+                case 3 -> ANSI_BRIGHT_RED   + 3 + ANSI_RESET;
+                case 4 -> ANSI_BLUE         + 4 + ANSI_RESET;
+                case 5 -> ANSI_RED          + 5 + ANSI_RESET;
+                case 6 -> ANSI_CYAN         + 6 + ANSI_RESET;
+                case 7 -> ANSI_PURPLE       + 7 + ANSI_RESET;
+                case 8 -> ANSI_BRIGHT_BLACK + 8 + ANSI_RESET;
                 default -> "E"; // This shouldn't be possible
             };
         };
